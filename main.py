@@ -45,9 +45,34 @@ class EmgApplication(Ui_Form):
 
     def train_myo(self):
         train_signals_emg.train_signals_emg()
+        _translate = QtCore.QCoreApplication.translate
+        df = pd.read_csv("scores_of_classifiers.csv")
+
+        values = df["Scores"]
+        #self.treeWidget.topLevelItem(0).setText(0, _translate("Form", "LDA"))
+        for i, j in enumerate(values):
+            value = j * 100
+            self.treeWidget.topLevelItem(i).setText(1, _translate("Form", f"{value:.2f}%"))
+        self.main_classifier()
+
 
 
     def set_of_canvas(self):
+
+        # Main screen
+        # Raw signals Canvas
+        self.horizontalLayout_15 = QtWidgets.QHBoxLayout(self.frame_15)
+        self.horizontalLayout_15.setObjectName("horizontallayout_6")
+        # Canvas here
+        self.figure_3 = plt.figure()
+        self.canvas_main_classifier = FigureCanvas(self.figure_3)
+        # end of Canvas
+        # Add Canvas
+        self.horizontalLayout_15.addWidget(self.canvas_main_classifier)
+        # end of horizontal layout
+
+
+
         # Raw signals Canvas
         self.horizontalLayout_5 = QtWidgets.QHBoxLayout(self.frame_12)
         self.horizontalLayout_5.setObjectName("horizontallayout_5")
@@ -71,6 +96,20 @@ class EmgApplication(Ui_Form):
         self.horizontalLayout_4.addWidget(self.canvas_process_signals)
         # end of horizontal layout
 
+    def main_classifier(self):
+        self.figure_3.clear()
+        df = pd.read_csv("scores_of_classifiers.csv")
+        classifiers = df["Classifiers"]
+        values = df["Scores"] * 100
+
+        ax3 = self.figure_3.add_subplot(111)
+        ax3.bar(classifiers, values)
+        ax3.set_title(f'Scores of the classifiers')
+        ax3.set_xlabel(f'Classifiers')
+        ax3.set_ylabel(f'Scores %')
+
+        # refresh canvas
+        self.canvas_main_classifier.draw()
 
 
     def raw_signals_plot(self):

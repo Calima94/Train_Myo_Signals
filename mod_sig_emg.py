@@ -267,16 +267,29 @@ def apply_classifiers(var_train, var_target, var_test, var_test_target, cv):
     gnb.fit(var_train, var_target)
     lin_svm.fit(var_train, var_target)
     neigh.fit(var_train, var_target)
-    error_tree_t = apl_error(tree, var_train, var_target, cv)
-    error_lda_t = apl_error(lda, var_train, var_target, cv)
-    error_gnb_t = apl_error(gnb, var_train, var_target, cv)
-    error_lin_svm_t = apl_error(lin_svm, var_train, var_target, cv)
-    error_neigh_t = apl_error(neigh, var_train, var_target, cv)
+    classifiers = [lda, gnb, lin_svm, neigh, tree]
+    #error_tree_t = apl_error(tree, var_train, var_target, cv)
+    #error_lda_t = apl_error(lda, var_train, var_target, cv)
+    #error_gnb_t = apl_error(gnb, var_train, var_target, cv)
+    #error_lin_svm_t = apl_error(lin_svm, var_train, var_target, cv)
+    #error_neigh_t = apl_error(neigh, var_train, var_target, cv)
     dump_classifiers(lda, tree, gnb, lin_svm, neigh)
-    pred_using_knn = lda.predict(var_test)
-    print(accuracy_score(var_test_target, pred_using_knn))
-    return error_tree_t, error_lda_t, error_gnb_t, error_lin_svm_t, error_neigh_t
+    #pred_using_knn = lda.predict(var_test)
+    #print(accuracy_score(var_test_target, pred_using_knn))
+    store_accuracy(classifiers, var_test, var_test_target)
+    #return error_tree_t, error_lda_t, error_gnb_t, error_lin_svm_t, error_neigh_t
 
+
+def store_accuracy(classifiers, var_test, var_test_target):
+    names = ["lda", "gnb", "lin_svm", "knn", "tree"]
+    accuracy = []
+    for i, j in enumerate(classifiers):
+        pred = j.predict(var_test)
+        score = accuracy_score(var_test_target, pred)
+        accuracy.append(score)
+    d = {'Classifiers': names, 'Scores': accuracy}
+    df = pd.DataFrame(data=d)
+    df.to_csv("scores_of_classifiers.csv", index=False)
 
 def dump_classifiers(lda, tree, gnb, lin_svm, neigh):
     dump(lda, 'files_joblib/lda_teste.joblib')
