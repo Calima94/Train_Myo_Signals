@@ -2,7 +2,31 @@ import mod_sig_emg as mse
 from param_to_use import ParametersToUse
 
 
-def train_signals_emg(args=None):
+class ClassifiersTrained:
+
+    def __init__(self,
+                 m_class_train_independentvars=None,
+                 m_class_train_target_vars=None,
+                 m_class_test_independentvars=None,
+                 m_class_test_target_var=None,
+                 lda=None,
+                 knn=None,
+                 gnb=None,
+                 tree=None,
+                 lin_svm=None):
+
+        self. m_class_train_independentVars = m_class_train_independentvars
+        self.m_class_train_target_vars = m_class_train_target_vars
+        self.m_class_test_independentVars = m_class_test_independentvars
+        self.m_class_test_target_vars = m_class_test_target_var
+        self.lda = lda
+        self.knn = knn
+        self.gnb = gnb
+        self.tree = tree
+        self.lin_svm = lin_svm
+
+
+def train_signals_emg():
     # Define the parameters to use in the training
     param_ = ParametersToUse()
 
@@ -80,12 +104,23 @@ def train_signals_emg(args=None):
     #    var_test_target=m_class_Test_TargetVar.ravel(),
     #    cv=param_.cv)
 
-    mse.apply_classifiers(
+    lda, knn, gnb, tree, lin_svm = mse.apply_classifiers(
         var_train=m_class_Train_IndepentVars,
         var_target=m_class_Train_TargetVar.ravel(),
         var_test=m_class_Test_IndepentVars,
         var_test_target=m_class_Test_TargetVar.ravel(),
         cv=param_.cv)
+
+    data_and_classifiers = ClassifiersTrained(m_class_Train_IndepentVars,
+                                              m_class_Train_TargetVar.ravel(),
+                                              m_class_Test_IndepentVars,
+                                              m_class_Test_TargetVar.ravel(),
+                                              lda,
+                                              knn,
+                                              gnb,
+                                              tree,
+                                              lin_svm)
+    return data_and_classifiers
 
 
 #if __name__ == "__main__":

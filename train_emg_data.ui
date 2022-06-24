@@ -105,7 +105,7 @@
          <string notr="true">background-color: rgb(255, 255, 255);</string>
         </property>
         <property name="currentIndex">
-         <number>0</number>
+         <number>2</number>
         </property>
         <widget class="QWidget" name="home_pg">
          <property name="styleSheet">
@@ -208,6 +208,12 @@
                 </item>
                 <item>
                  <widget class="QFrame" name="frame_15">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
                   <property name="frameShape">
                    <enum>QFrame::StyledPanel</enum>
                   </property>
@@ -314,6 +320,9 @@
                            <verstretch>0</verstretch>
                           </sizepolicy>
                          </property>
+                         <property name="text">
+                          <string>200</string>
+                         </property>
                          <property name="placeholderText">
                           <string>200</string>
                          </property>
@@ -337,6 +346,9 @@
                            <horstretch>0</horstretch>
                            <verstretch>0</verstretch>
                           </sizepolicy>
+                         </property>
+                         <property name="text">
+                          <string>250</string>
                          </property>
                          <property name="placeholderText">
                           <string>250</string>
@@ -428,28 +440,60 @@
                      <item>
                       <layout class="QHBoxLayout" name="horizontalLayout_6">
                        <item>
-                        <widget class="QLabel" name="label_6">
+                        <widget class="QPushButton" name="filter_1_btn">
+                         <property name="sizePolicy">
+                          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                           <horstretch>0</horstretch>
+                           <verstretch>0</verstretch>
+                          </sizepolicy>
+                         </property>
                          <property name="text">
-                          <string>Highpass filter</string>
+                          <string>Filter_1</string>
                          </property>
                         </widget>
                        </item>
                        <item>
-                        <widget class="QLineEdit" name="highpass_filter"/>
+                        <widget class="QLabel" name="filter_1_path">
+                         <property name="sizePolicy">
+                          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                           <horstretch>0</horstretch>
+                           <verstretch>0</verstretch>
+                          </sizepolicy>
+                         </property>
+                         <property name="styleSheet">
+                          <string notr="true">background-color: rgb(211, 215, 207);</string>
+                         </property>
+                         <property name="text">
+                          <string>Parameters/sos_highpass_filter.csv</string>
+                         </property>
+                        </widget>
                        </item>
                       </layout>
                      </item>
                      <item>
                       <layout class="QHBoxLayout" name="horizontalLayout_7">
                        <item>
-                        <widget class="QLabel" name="label_7">
+                        <widget class="QPushButton" name="filter_2_btn">
+                         <property name="sizePolicy">
+                          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                           <horstretch>0</horstretch>
+                           <verstretch>0</verstretch>
+                          </sizepolicy>
+                         </property>
                          <property name="text">
-                          <string>bandstop filter</string>
+                          <string>Filter_2</string>
                          </property>
                         </widget>
                        </item>
                        <item>
-                        <widget class="QLineEdit" name="bandstop_filter"/>
+                        <widget class="QLabel" name="filter_2_path">
+                         <property name="styleSheet">
+                          <string notr="true">background-color: rgb(186, 189, 182);</string>
+                         </property>
+                         <property name="text">
+                          <string>Parameters/sos_bandstop_filter.csv</string>
+                         </property>
+                        </widget>
                        </item>
                       </layout>
                      </item>
@@ -464,6 +508,9 @@
                        </item>
                        <item>
                         <widget class="QLineEdit" name="wav_filter">
+                         <property name="text">
+                          <string>db7</string>
+                         </property>
                          <property name="placeholderText">
                           <string>db7</string>
                          </property>
@@ -484,6 +531,11 @@
                         <widget class="QComboBox" name="levels_of_wav_filter">
                          <item>
                           <property name="text">
+                           <string>4</string>
+                          </property>
+                         </item>
+                         <item>
+                          <property name="text">
                            <string>2</string>
                           </property>
                          </item>
@@ -495,11 +547,6 @@
                          <item>
                           <property name="text">
                            <string>3</string>
-                          </property>
-                         </item>
-                         <item>
-                          <property name="text">
-                           <string>4</string>
                           </property>
                          </item>
                         </widget>
@@ -519,17 +566,17 @@
                         <widget class="QComboBox" name="layers_to_use">
                          <item>
                           <property name="text">
+                           <string>2</string>
+                          </property>
+                         </item>
+                         <item>
+                          <property name="text">
                            <string>4</string>
                           </property>
                          </item>
                          <item>
                           <property name="text">
                            <string>1</string>
-                          </property>
-                         </item>
-                         <item>
-                          <property name="text">
-                           <string>2</string>
                           </property>
                          </item>
                          <item>
@@ -620,7 +667,7 @@
                        <item>
                         <widget class="QLineEdit" name="test_size">
                          <property name="text">
-                          <string/>
+                          <string>0.3</string>
                          </property>
                          <property name="placeholderText">
                           <string>0.3</string>
@@ -640,6 +687,9 @@
                        </item>
                        <item>
                         <widget class="QLineEdit" name="random_state">
+                         <property name="text">
+                          <string>42</string>
+                         </property>
                          <property name="placeholderText">
                           <string>42</string>
                          </property>
@@ -658,6 +708,9 @@
                        </item>
                        <item>
                         <widget class="QLineEdit" name="cv">
+                         <property name="text">
+                          <string>5</string>
+                         </property>
                          <property name="placeholderText">
                           <string>5</string>
                          </property>
@@ -678,7 +731,7 @@
                     </property>
                     <layout class="QVBoxLayout" name="verticalLayout_9">
                      <item>
-                      <widget class="QLabel" name="label_20">
+                      <widget class="QLabel" name="label_15">
                        <property name="text">
                         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:12pt; font-weight:600;&quot;&gt;Raw Data EMG&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                        </property>
@@ -687,14 +740,18 @@
                      <item>
                       <layout class="QHBoxLayout" name="horizontalLayout_16">
                        <item>
-                        <widget class="QLabel" name="label_15">
+                        <widget class="QPushButton" name="search_file_btn">
                          <property name="text">
-                          <string>EMG file</string>
+                          <string>Search File</string>
                          </property>
                         </widget>
                        </item>
                        <item>
-                        <widget class="QLineEdit" name="emg_file"/>
+                        <widget class="QLabel" name="file_path_label">
+                         <property name="text">
+                          <string>Raw_EMG_Data/train_with_openCV_list_16_05.csv</string>
+                         </property>
+                        </widget>
                        </item>
                       </layout>
                      </item>
@@ -704,6 +761,13 @@
                  </layout>
                 </item>
                </layout>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="redefine_param_btn">
+               <property name="text">
+                <string>Redefine Parameters</string>
+               </property>
               </widget>
              </item>
             </layout>
@@ -758,22 +822,119 @@
              <string notr="true">background-color: rgb(138, 226, 52);</string>
             </property>
             <property name="currentIndex">
-             <number>4</number>
+             <number>0</number>
             </property>
             <widget class="QWidget" name="confusion_pg">
-             <widget class="QLabel" name="label_21">
-              <property name="geometry">
-               <rect>
-                <x>190</x>
-                <y>20</y>
-                <width>121</width>
-                <height>17</height>
-               </rect>
-              </property>
-              <property name="text">
-               <string>Confusion Matrix</string>
-              </property>
-             </widget>
+             <layout class="QVBoxLayout" name="verticalLayout_16">
+              <item>
+               <widget class="QLabel" name="label_21">
+                <property name="text">
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:12pt; font-weight:600;&quot;&gt;Confusion Matrix&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_24">
+                <item>
+                 <widget class="QLabel" name="label_6">
+                  <property name="text">
+                   <string>Classifier</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QComboBox" name="confusion_matrix_classifier_cb">
+                  <item>
+                   <property name="text">
+                    <string>knn</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>lda</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>gnb</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>tree</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>lin_svm</string>
+                   </property>
+                  </item>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_25">
+                <item>
+                 <widget class="QLabel" name="label_7">
+                  <property name="text">
+                   <string>Confusion Matrix Type</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QComboBox" name="confusin_matrix_type_cb">
+                  <item>
+                   <property name="text">
+                    <string>all</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>None</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>true</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>pred</string>
+                   </property>
+                  </item>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <widget class="QFrame" name="frame_16">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">background-color: rgb(255, 255, 255);</string>
+                </property>
+                <property name="frameShape">
+                 <enum>QFrame::StyledPanel</enum>
+                </property>
+                <property name="frameShadow">
+                 <enum>QFrame::Raised</enum>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="plot_conf_matrix_btn_2">
+                <property name="text">
+                 <string>Plot Matrix</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
             </widget>
             <widget class="QWidget" name="roc_pg">
              <widget class="QLabel" name="label_22">

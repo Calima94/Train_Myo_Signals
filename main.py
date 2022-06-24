@@ -1,5 +1,7 @@
 from train_emg_data import Ui_Form
 from PyQt5 import QtCore, QtGui, QtWidgets
+from sklearn.metrics import confusion_matrix, plot_confusion_matrix
+from sklearn.metrics import ConfusionMatrixDisplay
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 import matplotlib
@@ -9,6 +11,7 @@ from numpy import random
 import pandas as pd
 import numpy as np
 import train_signals_emg
+import os
 
 
 class MplCanvas(FigureCanvas):
@@ -22,7 +25,18 @@ class MplCanvas(FigureCanvas):
 class EmgApplication(Ui_Form):
     def __init__(self, definitions):
         super(Ui_Form, self).__init__()
+        self.data_and_classifiers = None
         self.setupUi(definitions)
+        self.trained_sys = False
+
+        self.search_file_btn.clicked.connect(self.find_path_file)
+        self.filter_1_btn.clicked.connect(self.find_path_filter_1)
+        self.filter_2_btn.clicked.connect(self.find_path_filter_2)
+        self.redefine_param_btn.clicked.connect(self.refresh_params)
+
+        self.plot_conf_matrix_btn_2.clicked.connect(self.plot_confusion_matrix)
+
+
         # Select pages
         self.results_btn.clicked.connect(lambda: self.pages.setCurrentWidget(self.results_pg))
         self.home_btn.clicked.connect(lambda: self.pages.setCurrentWidget(self.home_pg))
@@ -33,7 +47,6 @@ class EmgApplication(Ui_Form):
 
         self.train_all_signals.clicked.connect(self.train_myo)
 
-
         self.plot_process_signals_btn.clicked.connect(
             lambda: self.results_pgs.setCurrentWidget(self.plot_processed_signals_pg))
         self.plot_raw_signals_btn.clicked.connect(
@@ -43,8 +56,146 @@ class EmgApplication(Ui_Form):
         self.btn_plot_processed_signals.clicked.connect(self.classified_signals)
         self.plot_raw_signals_btn_2.clicked.connect(self.raw_signals_plot)
 
-    def train_myo(self):
-        train_signals_emg.train_signals_emg()
+    def plot_confusion_matrix(self):
+        if self.data_and_classifiers is not None:
+
+            self.figure_2.clear()
+            # pred_knn = self.data_and_classifiers.knn.predict(self.data_and_classifiers.m_class_test_independentVars)
+            classifiers = {'knn': self.data_and_classifiers.knn,
+                           'lda': self.data_and_classifiers.lda,
+                           'gnb': self.data_and_classifiers.gnb,
+                           'tree': self.data_and_classifiers.tree,
+                           'lin_svm': self.data_and_classifiers.lin_svm}
+
+            conf_classifier = self.confusion_matrix_classifier_cb.currentText()
+            conf_type = self.confusin_matrix_type_cb.currentText()
+            if conf_type == 'None':
+                conf_type = None
+            # https://stackoverflow.com/questions/19233771/sklearn-plot-confusion-matrix-with-labels
+            ax4 = self.figure_2.add_subplot(111)
+            ConfusionMatrixDisplay.from_estimator(classifiers[conf_classifier],
+                                                  self.data_and_classifiers.m_class_test_independentVars,
+                                                  self.data_and_classifiers.m_class_test_target_vars,
+                                                  ax=ax4,
+                                                  normalize=conf_type)
+
+            ax4.set(xlabel='Predicted', ylabel='True', title='Confusion Matrix True vs Predicted')
+
+
+
+            #ax.bar(classifiers, values)
+            #ax3.set_title(f'Scores of the classifiers')
+            #ax3.set_xlabel(f'Classifiers')
+            #ax3.set_ylabel(f'Scores %')
+
+            # refresh canvas
+            self.canvas_conf_matrix.draw()
+
+    def refresh_params(self):
+        frequency = self.frequency.text()
+        window_time = self.window_time.text()
+        n_of_channels = self.n_of_channels.currentText()
+        filter_1_path = self.filter_1_path.text()
+        filter_2_path = self.filter_2_path.text()
+        wav_filter = self.wav_filter.text()
+        levels_of_filter = self.levels_of_wav_filter.currentText()
+        layers_to_use_num = int(self.layers_to_use.currentText())
+        layers_to_use = []
+        for i in range(layers_to_use_num):
+            layers_to_use.append(i+1)
+
+        type_of_matrix = self.type_of_matrix.currentText()
+        test_size = self.test_size.text()
+        random_state = self.random_state.text()
+        cv = self.cv.text()
+        raw_file_data = self.file_path_label.text()
+
+        filter_1_df = pd.read_csv(filter_1_path, index_col="Filter")
+        filter_2_df = pd.read_csv(filter_2_path, index_col="Filter")
+
+        filter_1 = filter_1_df.loc["sos_high_pass_", "Value"]
+        filter_2 = filter_2_df.loc["sos_bandstop_", "Value"]
+
+        df = pd.read_csv("Parameters/parameters.csv", index_col="Parameter")
+
+        df.loc["frequency_of_capture", "Value"] = frequency
+        df.loc["window_time", "Value"] = window_time
+        df.loc["n_of_channels_and_category", "Value"] = n_of_channels
+        df.loc["sos_high_pass_", "Value"] = filter_2
+        df.loc["sos_bandstop_", "Value"] = filter_1
+        df.loc["layers_to_catch", "Value"] = layers_to_use
+        df.loc["levels_to_use", "Value"] = levels_of_filter
+        df.loc["filter_to_use", "Value"] = wav_filter
+        df.loc["type_matrix", "Value"] = type_of_matrix
+        df.loc["test_size", "Value"] = test_size
+        df.loc["random_state", "Value"] = random_state
+        df.loc["cv", "Value"] = cv
+        df.loc["file", "Value"] = raw_file_data
+        df.to_csv("Parameters/parameters.csv")
+
+
+    def find_path_filter_1(self):
+        # self.file_path_label.setText("This path")
+        # Open a File Dialog
+        if "PYCHARM_HOSTED" in os.environ:
+            ret, _ = QtWidgets.QFileDialog.getOpenFileName(
+                None, 'Open File',
+                'Parameters/', "All Files (*);;Python Files (*.py)",
+                options=QtWidgets.QFileDialog.DontUseNativeDialog
+            )
+        else:
+            ret, _ = QtWidgets.QFileDialog.getOpenFileName(
+                None, 'Open File',
+                'Parameters/', "All Files (*);;Python Files (*.py)"
+            )
+        if ret:
+            self.filter_1_path.setText(ret)
+
+    def find_path_filter_2(self):
+        # self.file_path_label.setText("This path")
+        # Open a File Dialog
+        if "PYCHARM_HOSTED" in os.environ:
+            ret, _ = QtWidgets.QFileDialog.getOpenFileName(
+                None, 'Open File',
+                'Parameters/', "All Files (*);;Python Files (*.py)",
+                options=QtWidgets.QFileDialog.DontUseNativeDialog
+            )
+        else:
+            ret, _ = QtWidgets.QFileDialog.getOpenFileName(
+                None, 'Open File',
+                'Parameters/', "All Files (*);;Python Files (*.py)"
+            )
+        if ret:
+            self.filter_2_path.setText(ret)
+
+
+    def find_path_file(self):
+        #self.file_path_label.setText("This path")
+        # Open a File Dialog
+        if "PYCHARM_HOSTED" in os.environ:
+            ret, _ = QtWidgets.QFileDialog.getOpenFileName(
+                None, 'Open File',
+                'Raw_EMG_Data/', "All Files (*);;Python Files (*.py)",
+                options=QtWidgets.QFileDialog.DontUseNativeDialog
+            )
+        else:
+            ret, _ = QtWidgets.QFileDialog.getOpenFileName(
+                None, 'Open File',
+                'Raw_EMG_Data/', "All Files (*);;Python Files (*.py)"
+            )
+
+
+
+        #fname = QtWidgets.QFileDialog.getOpenFileName(None, "Open File", "", "All Files (*);;Python Files (*.py)")
+
+        # Output filename to screen
+
+        if ret:
+            self.file_path_label.setText(ret)
+
+    def train_myo(self, file):
+        self.data_and_classifiers = train_signals_emg.train_signals_emg()
+        self.trained_sys = True
         _translate = QtCore.QCoreApplication.translate
         df = pd.read_csv("scores_of_classifiers.csv")
 
@@ -95,6 +246,18 @@ class EmgApplication(Ui_Form):
         # Add Canvas
         self.horizontalLayout_4.addWidget(self.canvas_process_signals)
         # end of horizontal layout
+
+        # Confusion Matrix
+        self.horizontalLayout_16 = QtWidgets.QHBoxLayout(self.frame_16)
+        self.horizontalLayout_16.setObjectName("horizontallayout_16")
+        # Canvas here
+        self.figure_2 = plt.figure()
+        self.canvas_conf_matrix = FigureCanvas(self.figure_2)
+        # end of Canvas
+        # Add Canvas
+        self.horizontalLayout_16.addWidget(self.canvas_conf_matrix)
+        # end of horizontal layout
+
 
     def main_classifier(self):
         self.figure_3.clear()
@@ -170,6 +333,9 @@ class EmgApplication(Ui_Form):
 
 
 if __name__ == "__main__":
+
+
+
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QWidget()
     ui = EmgApplication(MainWindow)

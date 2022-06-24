@@ -261,23 +261,24 @@ def apply_classifiers(var_train, var_target, var_test, var_test_target, cv):
     tree = DecisionTreeClassifier()
     gnb = GaussianNB()
     lin_svm = svm.SVC(decision_function_shape='ovo')
-    neigh = KNeighborsClassifier(n_neighbors=5)
+    knn = KNeighborsClassifier(n_neighbors=5)
     lda.fit(var_train, var_target)
     tree.fit(var_train, var_target)
     gnb.fit(var_train, var_target)
     lin_svm.fit(var_train, var_target)
-    neigh.fit(var_train, var_target)
-    classifiers = [lda, gnb, lin_svm, neigh, tree]
+    knn.fit(var_train, var_target)
+    classifiers = [lda, gnb, lin_svm, knn, tree]
     #error_tree_t = apl_error(tree, var_train, var_target, cv)
     #error_lda_t = apl_error(lda, var_train, var_target, cv)
     #error_gnb_t = apl_error(gnb, var_train, var_target, cv)
     #error_lin_svm_t = apl_error(lin_svm, var_train, var_target, cv)
     #error_neigh_t = apl_error(neigh, var_train, var_target, cv)
-    dump_classifiers(lda, tree, gnb, lin_svm, neigh)
+    dump_classifiers(lda, tree, gnb, lin_svm, knn)
     #pred_using_knn = lda.predict(var_test)
     #print(accuracy_score(var_test_target, pred_using_knn))
     store_accuracy(classifiers, var_test, var_test_target)
     #return error_tree_t, error_lda_t, error_gnb_t, error_lin_svm_t, error_neigh_t
+    return lda, knn, gnb, tree, lin_svm
 
 
 def store_accuracy(classifiers, var_test, var_test_target):
@@ -291,12 +292,12 @@ def store_accuracy(classifiers, var_test, var_test_target):
     df = pd.DataFrame(data=d)
     df.to_csv("scores_of_classifiers.csv", index=False)
 
-def dump_classifiers(lda, tree, gnb, lin_svm, neigh):
+def dump_classifiers(lda, tree, gnb, lin_svm, knn):
     dump(lda, 'files_joblib/lda_teste.joblib')
     dump(tree, 'files_joblib/tree_teste.joblib')
     dump(gnb, 'files_joblib/gnb_teste.joblib')
     dump(lin_svm, 'files_joblib/lin_svm_teste.joblib')
-    dump(neigh, 'files_joblib/neigh_teste.joblib')
+    dump(knn, 'files_joblib/neigh_teste.joblib')
 
 
 #def predict_data(data_):
