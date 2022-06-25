@@ -14,8 +14,7 @@ class ClassifiersTrained:
                  gnb=None,
                  tree=None,
                  lin_svm=None):
-
-        self. m_class_train_independentVars = m_class_train_independentvars
+        self.m_class_train_independentVars = m_class_train_independentvars
         self.m_class_train_target_vars = m_class_train_target_vars
         self.m_class_test_independentVars = m_class_test_independentvars
         self.m_class_test_target_vars = m_class_test_target_var
@@ -97,7 +96,7 @@ def train_signals_emg():
                                                                         m_class_Test_TargetVar=m_class_Test_TargetVar
                                                                         )
     # Save the preditors and calc the erros of each preditor
-    #[error_tree_n, error_lda_n, error_gnb_n, error_lin_svm_n, error_neigh_n] = mse.apply_classifiers(
+    # [error_tree_n, error_lda_n, error_gnb_n, error_lin_svm_n, error_neigh_n] = mse.apply_classifiers(
     #    var_train=m_class_Train_IndepentVars,
     #    var_target=m_class_Train_TargetVar.ravel(),
     #    var_test=m_class_Test_IndepentVars,
@@ -122,6 +121,5 @@ def train_signals_emg():
                                               lin_svm)
     return data_and_classifiers
 
-
-#if __name__ == "__main__":
+# if __name__ == "__main__":
 #    main()
