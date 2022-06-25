@@ -3,10 +3,9 @@ from PyQt5 import QtCore, QtWidgets
 from sklearn.metrics import ConfusionMatrixDisplay
 from sklearn.metrics import roc_curve
 from sklearn.metrics import roc_auc_score
-import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+import matplotlib.pyplot as plt
 import sys
-from matplotlib.figure import Figure
 import pandas as pd
 import numpy as np
 import train_signals_emg
