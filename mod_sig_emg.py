@@ -18,6 +18,7 @@ from sklearn.metrics import accuracy_score
 from joblib import dump
 from sklearn.preprocessing import OrdinalEncoder
 from scipy import signal
+from sklearn.preprocessing import StandardScaler
 
 
 def read_data(file):
@@ -25,8 +26,19 @@ def read_data(file):
     # scaler = StandardScaler()
     # raw_data = pd.read_excel(file)
     raw_data = pd.read_csv(file)
+    raw_data.columns = raw_data.columns.str.strip().str.lower()
+    last_column = raw_data.columns[-1]
+    to_use_in_pat =f"^chanel|^channel|{last_column}"
     # raw_data = pd.read_feather(file)
-    raw_data.drop(labels=["Unnamed: 0", "time"], axis="columns", inplace=True)
+    raw_data = raw_data.loc[:, raw_data.columns.str.contains(pat=to_use_in_pat)].copy()
+    #breakpoint()
+
+    #if "Unnamed: 0" in raw_data.columns:
+     #   raw_data = raw_data.drop(labels=["Unnamed: 0", "time"], axis="columns")
+    #else:
+       # raw_data = raw_data.drop(labels=["time"], axis="columns")
+
+
     # https://stackoverflow.com/questions/26414913/normalize-columns-of-pandas-data-frame
     # raw_data.iloc[:,0:-1] = scaler.fit_transform(raw_data.iloc[:,0:-1].to_numpy())
     # select_channels = raw_data.iloc[:,:8]
@@ -39,7 +51,7 @@ def read_data(file):
 
 
 def spare_classes_(data):
-    positions = data.groupby("position")
+    positions = data.groupby(data.columns.values[-1])
     classes = [positions.get_group(i + 1) for i, j in enumerate(positions)]
     return classes
 
@@ -48,7 +60,8 @@ def standardize_classes(classes, time_between_captures_of_samples, window_time):
     n_of_samples = window_time // time_between_captures_of_samples
     for i, j in enumerate(classes):
         lenght_ = int((len(j) // n_of_samples) * n_of_samples)
-        classes[i] = classes[i].iloc[:lenght_, :8]
+        #classes[i] = classes[i].iloc[:lenght_, :8]
+        classes[i] = classes[i].iloc[:lenght_, :-1]
     return classes
 
 
@@ -56,6 +69,7 @@ def to_numpy_func(classes):
     for i, j in enumerate(classes):
         classes[i] = j.to_numpy()
     classes = np.array(classes, dtype=object)
+
     return classes
 
 
@@ -63,7 +77,6 @@ def sample_classes_(classes, time_between_captures_of_samples, window_time, n_of
     n_of_classes = len(classes)
     n_samples = int(window_time / time_between_captures_of_samples)
     class_mod_f = []
-
     for i, j in enumerate(classes):
         len_ = int(len(j) / n_samples)
         class_mod_ = np.zeros([len_, n_samples, n_of_channels_and_category])
@@ -184,9 +197,22 @@ def fitting_m_class(m_matrix_):
     return m_matrix_table_, lens_table_
 
 
+def name_columns_of_table(n_columns):
+    columns_name = None
+    for i in range(n_columns):
+        if columns_name is None:
+            columns_name = [f"Chanel_{i+1}"]
+        else:
+            if i < n_columns - 1:
+                columns_name.append(f"Chanel_{i+1}")
+            else:
+                columns_name.append("Category")
+    return columns_name
+
+
 def transf_to_df_class(m_matrix_, lens_table_):
-    from sklearn.preprocessing import StandardScaler
-    scaler = StandardScaler()
+    #from sklearn.preprocessing import StandardScaler
+    #scaler = StandardScaler()
     # https://stackoverflow.com/questions/8486294/how-to-add-an-extra-column-to-a-numpy-array
     m_matrix_ = np.hstack((m_matrix_, np.zeros((m_matrix_.shape[0], 1))))
     lenght_ = 0
@@ -194,17 +220,21 @@ def transf_to_df_class(m_matrix_, lens_table_):
         for k in range(int(j)):
             m_matrix_[lenght_ + k, -1] = i
         lenght_ += int(j)
+    n_columns = len(m_matrix_[0])
+    name_of_columns = name_columns_of_table(n_columns=n_columns)
+    #print(name_of_columns)
+    #df = pd.DataFrame(m_matrix_, columns=['Chanel_1',
+     #                                     'Chanel_2',
+      #                                    'Chanel_3',
+       #                                   'Chanel_4',
+        #                                  'Chanel_5',
+         #                                 'Chanel_6',
+          #                                'Chanel_7',
+           #                               'Chanel_8',
+            #                              'Category'
+             #                             ])
 
-    df = pd.DataFrame(m_matrix_, columns=['Chanel_1',
-                                          'Chanel_2',
-                                          'Chanel_3',
-                                          'Chanel_4',
-                                          'Chanel_5',
-                                          'Chanel_6',
-                                          'Chanel_7',
-                                          'Chanel_8',
-                                          'Category'
-                                          ])
+    df = pd.DataFrame(m_matrix_, columns=name_of_columns)
     # https://stackoverflow.com/questions/26414913/normalize-columns-of-pandas-data-frame
     # 3df.iloc[:,0:-1] = scaler.fit_transform(df.iloc[:,0:-1].to_numpy())
     return df
@@ -298,6 +328,12 @@ def dump_classifiers(lda, tree, gnb, lin_svm, knn):
     dump(gnb, 'files_joblib/gnb_teste.joblib')
     dump(lin_svm, 'files_joblib/lin_svm_teste.joblib')
     dump(knn, 'files_joblib/neigh_teste.joblib')
+    # copy_to_my_arm_def the .jobfiles files
+    dump(lda, '../my_arm_def/lda_teste.joblib')
+    dump(tree, '../my_arm_def/tree_teste.joblib')
+    dump(gnb, '../my_arm_def/gnb_teste.joblib')
+    dump(lin_svm, '../my_arm_def/lin_svm_teste.joblib')
+    dump(knn, '../my_arm_def/neigh_teste.joblib')
 
 
 #def predict_data(data_):

@@ -34,6 +34,7 @@ def train_signals_emg():
     # Spare classes from the data
     classes = mse.spare_classes_(data=new_data)
     # Standardize classes to multiple of a window time(ms) / 5
+
     classes = mse.standardize_classes(classes=classes,
                                       time_between_captures_of_samples=param_.time_between_captures_of_samples,
                                       window_time=param_.window_time)
@@ -46,21 +47,23 @@ def train_signals_emg():
                                      n_of_channels_and_category=param_.n_of_channels_and_category
                                      )
 
+    # Filter highpass
     class_mod_ = mse.filter_signal(class_mod_=class_mod_,
                                    sos=param_.sos_high_pass_,
                                    n_of_channels_and_category=param_.n_of_channels_and_category)
-
+    # Filter Bandstop
     class_mod_ = mse.filter_signal(class_mod_=class_mod_,
                                    sos=param_.sos_bandstop_,
                                    n_of_channels_and_category=param_.n_of_channels_and_category)
 
-    # filter the signals with Wavelet filter
+    # Filter the signals with Wavelet filter
     class_mod_ = mse.select_wavelet_layer_x(class_mod_=class_mod_,
                                             filter_to_use=param_.filter_to_use,
                                             levels_to_use=param_.levels_to_use,
                                             layers_to_catch=param_.layers_to_catch,
                                             n_of_channels_and_category=param_.n_of_channels_and_category
                                             )
+
     # Extract the RMVS or MAV values of the samples
     m_matrix_ = mse.matrix_m(type_matrix=param_.type_matrix,
                              class_mod_=class_mod_,

@@ -439,18 +439,18 @@ class EmgApplication(Ui_Form):
             ax1 = self.figure_1.add_subplot(111)
             # Define parameters and values of the categories
             categories = df["Category"].unique()
-            colors = ["red", "blue", "green", "yellow", "brown"]
-            angles = ['180°', '90°', '65', '45', '30']
+            colors = ["red", "blue", "green", "yellow", "brown", "azure", "chocolate", "ivory", "lavender", "olive"]
+            category = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']
             for i, j in enumerate(categories):
                 mask = df["Category"] == j
                 df_x = df[mask]
                 ax1.scatter(x=df_x[df.columns[col1 - 1]], y=df_x[df.columns[col2 - 1]], color=colors[i],
-                            label=angles[i])
+                            label=f"Category: {category[i]}")
 
             # Decorate
             ax1.set_title(f'Values in Channel_{col1} and Chanel_{col2} per category')
             ax1.set_xlabel(f'Chanel_{col1} - value')
-            ax1.set_ylabel(f'Chane_{col2} - value')
+            ax1.set_ylabel(f'Chanel_{col2} - value')
             ax1.legend(loc='best')
         # Show a message box indicating that the classifiers have not been trained
         else:
