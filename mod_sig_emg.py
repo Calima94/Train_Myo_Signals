@@ -18,7 +18,9 @@ from sklearn.metrics import accuracy_score
 from joblib import dump
 from sklearn.preprocessing import OrdinalEncoder
 from scipy import signal
-from sklearn.preprocessing import StandardScaler
+
+
+# from sklearn.preprocessing import StandardScaler
 
 
 def read_data(file):
@@ -28,16 +30,15 @@ def read_data(file):
     raw_data = pd.read_csv(file)
     raw_data.columns = raw_data.columns.str.strip().str.lower()
     last_column = raw_data.columns[-1]
-    to_use_in_pat =f"^chanel|^channel|{last_column}"
+    to_use_in_pat = f"^chanel|^channel|{last_column}"
     # raw_data = pd.read_feather(file)
     raw_data = raw_data.loc[:, raw_data.columns.str.contains(pat=to_use_in_pat)].copy()
-    #breakpoint()
+    # breakpoint()
 
-    #if "Unnamed: 0" in raw_data.columns:
-     #   raw_data = raw_data.drop(labels=["Unnamed: 0", "time"], axis="columns")
-    #else:
-       # raw_data = raw_data.drop(labels=["time"], axis="columns")
-
+    # if "Unnamed: 0" in raw_data.columns:
+    #   raw_data = raw_data.drop(labels=["Unnamed: 0", "time"], axis="columns")
+    # else:
+    # raw_data = raw_data.drop(labels=["time"], axis="columns")
 
     # https://stackoverflow.com/questions/26414913/normalize-columns-of-pandas-data-frame
     # raw_data.iloc[:,0:-1] = scaler.fit_transform(raw_data.iloc[:,0:-1].to_numpy())
@@ -60,7 +61,7 @@ def standardize_classes(classes, time_between_captures_of_samples, window_time):
     n_of_samples = window_time // time_between_captures_of_samples
     for i, j in enumerate(classes):
         lenght_ = int((len(j) // n_of_samples) * n_of_samples)
-        #classes[i] = classes[i].iloc[:lenght_, :8]
+        # classes[i] = classes[i].iloc[:lenght_, :8]
         classes[i] = classes[i].iloc[:lenght_, :-1]
     return classes
 
@@ -201,18 +202,18 @@ def name_columns_of_table(n_columns):
     columns_name = None
     for i in range(n_columns):
         if columns_name is None:
-            columns_name = [f"Chanel_{i+1}"]
+            columns_name = [f"Chanel_{i + 1}"]
         else:
             if i < n_columns - 1:
-                columns_name.append(f"Chanel_{i+1}")
+                columns_name.append(f"Chanel_{i + 1}")
             else:
                 columns_name.append("Category")
     return columns_name
 
 
 def transf_to_df_class(m_matrix_, lens_table_):
-    #from sklearn.preprocessing import StandardScaler
-    #scaler = StandardScaler()
+    # from sklearn.preprocessing import StandardScaler
+    # scaler = StandardScaler()
     # https://stackoverflow.com/questions/8486294/how-to-add-an-extra-column-to-a-numpy-array
     m_matrix_ = np.hstack((m_matrix_, np.zeros((m_matrix_.shape[0], 1))))
     lenght_ = 0
@@ -222,17 +223,17 @@ def transf_to_df_class(m_matrix_, lens_table_):
         lenght_ += int(j)
     n_columns = len(m_matrix_[0])
     name_of_columns = name_columns_of_table(n_columns=n_columns)
-    #print(name_of_columns)
-    #df = pd.DataFrame(m_matrix_, columns=['Chanel_1',
-     #                                     'Chanel_2',
-      #                                    'Chanel_3',
-       #                                   'Chanel_4',
-        #                                  'Chanel_5',
-         #                                 'Chanel_6',
-          #                                'Chanel_7',
-           #                               'Chanel_8',
-            #                              'Category'
-             #                             ])
+    # print(name_of_columns)
+    # df = pd.DataFrame(m_matrix_, columns=['Chanel_1',
+    #                                     'Chanel_2',
+    #                                    'Chanel_3',
+    #                                   'Chanel_4',
+    #                                  'Chanel_5',
+    #                                 'Chanel_6',
+    #                                'Chanel_7',
+    #                               'Chanel_8',
+    #                              'Category'
+    #                             ])
 
     df = pd.DataFrame(m_matrix_, columns=name_of_columns)
     # https://stackoverflow.com/questions/26414913/normalize-columns-of-pandas-data-frame
@@ -286,28 +287,46 @@ def apl_error(model, independent_vars, target_vars, cv):
     return erro
 
 
-def apply_classifiers(var_train, var_target, var_test, var_test_target, cv):
-    lda = LinearDiscriminantAnalysis()
-    tree = DecisionTreeClassifier()
+def apply_classifiers(var_train, var_target, var_test, var_test_target, cv, store=False, **kwargs):
+    # print(kwargs.keys())
+    # print(kwargs.values())
+    # print(type(kwargs.values()))
+
+    if "lda" in kwargs.keys():
+        # print(float(list(kwargs.values())[0]))
+        lda = LinearDiscriminantAnalysis(solver='lsqr', shrinkage=float(list(kwargs.values())[0]))
+        # print("here")
+    else:
+        lda = LinearDiscriminantAnalysis()
+    if "tree" in kwargs.keys():
+
+        tree = DecisionTreeClassifier(max_depth=int(list(kwargs.values())[0]))
+    else:
+        tree = DecisionTreeClassifier()
+
     gnb = GaussianNB()
     lin_svm = svm.SVC(decision_function_shape='ovo')
-    knn = KNeighborsClassifier(n_neighbors=5)
+    if "knn" in kwargs.keys():
+        knn = KNeighborsClassifier(n_neighbors=int(list(kwargs.values())[0]))
+    else:
+        knn = KNeighborsClassifier(n_neighbors=5)
     lda.fit(var_train, var_target)
     tree.fit(var_train, var_target)
     gnb.fit(var_train, var_target)
     lin_svm.fit(var_train, var_target)
     knn.fit(var_train, var_target)
     classifiers = [lda, gnb, lin_svm, knn, tree]
-    #error_tree_t = apl_error(tree, var_train, var_target, cv)
-    #error_lda_t = apl_error(lda, var_train, var_target, cv)
-    #error_gnb_t = apl_error(gnb, var_train, var_target, cv)
-    #error_lin_svm_t = apl_error(lin_svm, var_train, var_target, cv)
-    #error_neigh_t = apl_error(neigh, var_train, var_target, cv)
-    dump_classifiers(lda, tree, gnb, lin_svm, knn)
-    #pred_using_knn = lda.predict(var_test)
-    #print(accuracy_score(var_test_target, pred_using_knn))
+    # error_tree_t = apl_error(tree, var_train, var_target, cv)
+    # error_lda_t = apl_error(lda, var_train, var_target, cv)
+    # error_gnb_t = apl_error(gnb, var_train, var_target, cv)
+    # error_lin_svm_t = apl_error(lin_svm, var_train, var_target, cv)
+    # error_neigh_t = apl_error(neigh, var_train, var_target, cv)
+    if store:
+        dump_classifiers(lda, tree, gnb, lin_svm, knn)
+    # pred_using_knn = lda.predict(var_test)
+    # print(accuracy_score(var_test_target, pred_using_knn))
     store_accuracy(classifiers, var_test, var_test_target)
-    #return error_tree_t, error_lda_t, error_gnb_t, error_lin_svm_t, error_neigh_t
+    # return error_tree_t, error_lda_t, error_gnb_t, error_lin_svm_t, error_neigh_t
     return lda, knn, gnb, tree, lin_svm
 
 
@@ -322,6 +341,7 @@ def store_accuracy(classifiers, var_test, var_test_target):
     df = pd.DataFrame(data=d)
     df.to_csv("scores_of_classifiers.csv", index=False)
 
+
 def dump_classifiers(lda, tree, gnb, lin_svm, knn):
     dump(lda, 'files_joblib/lda_teste.joblib')
     dump(tree, 'files_joblib/tree_teste.joblib')
@@ -335,9 +355,8 @@ def dump_classifiers(lda, tree, gnb, lin_svm, knn):
     dump(lin_svm, '../my_arm_def/lin_svm_teste.joblib')
     dump(knn, '../my_arm_def/neigh_teste.joblib')
 
-
-#def predict_data(data_):
-    #from joblib import load
-    #clf = load('/home/caio/ros2_ws/lda.joblib')
-    #p = clf.predict(data_)
-    #return p[0]
+# def predict_data(data_):
+# from joblib import load
+# clf = load('/home/caio/ros2_ws/lda.joblib')
+# p = clf.predict(data_)
+# return p[0]

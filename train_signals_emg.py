@@ -25,7 +25,7 @@ class ClassifiersTrained:
         self.lin_svm = lin_svm
 
 
-def train_signals_emg():
+def train_signals_emg(store=False, **kwargs):
     # Define the parameters to use in the training
     param_ = ParametersToUse()
 
@@ -111,7 +111,10 @@ def train_signals_emg():
         var_target=m_class_Train_TargetVar.ravel(),
         var_test=m_class_Test_IndepentVars,
         var_test_target=m_class_Test_TargetVar.ravel(),
-        cv=param_.cv)
+        cv=param_.cv,
+        store=store,
+        **kwargs
+    )
 
     data_and_classifiers = ClassifiersTrained(m_class_Train_IndepentVars,
                                               m_class_Train_TargetVar.ravel(),
