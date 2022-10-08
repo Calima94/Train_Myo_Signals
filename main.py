@@ -163,6 +163,7 @@ class EmgApplication(Ui_Form):
             self.treeWidget.topLevelItem(i).setText(1, _translate("Form", f"{value:.2f}%"))
         # Plot the scores in the graph
         self.main_classifier()
+        self.data_successfully_trained_msg()
 
     def main_classifier(self) -> None:
         """
@@ -232,6 +233,7 @@ class EmgApplication(Ui_Form):
         df.loc["cv", "Value"] = cv
         df.loc["file", "Value"] = raw_file_data
         df.to_csv("Parameters/parameters.csv")
+        self.parameters_updated_msg()
 
     def find_path_filter_1(self) -> None:
         """
@@ -522,6 +524,46 @@ class EmgApplication(Ui_Form):
         # Show a message box indicating that the classifiers have not been trained
         else:
             self.not_trained_model()
+
+    @staticmethod
+    def parameters_updated_msg() -> None:
+        """
+        Show a Message box, indicating that the Parameters were updated
+        """
+        msg = QtWidgets.QMessageBox()
+        msg.setIcon(QtWidgets.QMessageBox.Information)
+
+        # setting message for Message Box
+        msg.setText("The parameters were successfully updated ")
+
+        # setting Message box window title
+        msg.setWindowTitle("Parameters Updated")
+
+        # declaring buttons on Message Box
+        msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
+
+        # start the app
+        msg.exec_()
+
+    @staticmethod
+    def data_successfully_trained_msg() -> None:
+        """
+        Show a Message box, indicating that data was successfully trained
+        """
+        msg = QtWidgets.QMessageBox()
+        msg.setIcon(QtWidgets.QMessageBox.Information)
+
+        # setting message for Message Box
+        msg.setText("The data was successfully trained")
+
+        # setting Message box window title
+        msg.setWindowTitle("Data Trained")
+
+        # declaring buttons on Message Box
+        msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
+
+        # start the app
+        msg.exec_()
 
     @staticmethod
     def not_trained_model() -> None:
