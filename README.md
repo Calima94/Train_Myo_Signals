@@ -1,2 +1,7 @@
 # Train_Myo_Signals
-This Repository is to save and process EMG Data from Myo armband
+
+This Repository is for processing, analysing and generate classifiers with EMG (Eletromiography) data.
+
+## How to use
+
+
