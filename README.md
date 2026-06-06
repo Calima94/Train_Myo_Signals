@@ -42,21 +42,22 @@ Capture_EMG_Data  ──►  Raw_EMG_Data/  ──►  feature extraction  ─�
 - Serializes trained models to disk with `joblib` for later reuse/inference.
 - Exports a side-by-side score comparison to `scores_of_classifiers.csv`.
 
-## Results
+## Example output
 
-The trained classifiers and their scores are stored in
-[`scores_of_classifiers.csv`](scores_of_classifiers.csv).
+Each run automatically trains all classifiers and writes a side-by-side comparison to
+[`scores_of_classifiers.csv`](scores_of_classifiers.csv) — the point of the tool is this
+one-click benchmark, not any single result. A sample run on a small dataset:
 
-<!-- Cole aqui os valores reais do CSV — esta tabela é o que um revisor olha primeiro. -->
-<!-- Paste the real values from the CSV here — this table is the first thing a reviewer reads. -->
+| Classifier | Model | Score |
+|------------|-------|-------|
+| `lda` | Linear Discriminant Analysis | 0.9444 |
+| `gnb` | Gaussian Naive Bayes | 0.9444 |
+| `lin_svm` | Linear SVM | 0.9444 |
+| `knn` | k-Nearest Neighbors | 0.9444 |
+| `tree` | Decision Tree | 0.9444 |
 
-| Classifier | Score |
-|------------|-------|
-| ⟨classifier 1⟩ | ⟨0.xx⟩ |
-| ⟨classifier 2⟩ | ⟨0.xx⟩ |
-| ⟨classifier 3⟩ | ⟨0.xx⟩ |
-| ⟨classifier 4⟩ | ⟨0.xx⟩ |
-| ⟨classifier 5⟩ | ⟨0.xx⟩ |
+> Scores depend entirely on the dataset you load; the values above are illustrative (a small sample).
+> Os valores acima são ilustrativos (amostra pequena) e dependem do conjunto de dados carregado.
 
 ## Requirements
 
